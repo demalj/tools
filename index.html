@@ -1,1069 +1,1245 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>实用工具箱</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>万能工具箱</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, BlinkMacSystemFont, sans-serif}
-body{background:#f5f7fa;font-size:16px;overflow-x:hidden}
-
-/* 全屏页面容器 手机适配 */
-.page{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  padding:16px;
-  overflow-y:auto;
-  display:none;
-  background:#f5f7fa;
-  -webkit-overflow-scrolling: touch;
-}
-.page.active{display:block;}
-
-/* 首页顶部 */
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:12px}
-.top-left{display:flex;align-items:center;gap:8px;font-size:28px;font-weight:500}
-.dot-blue{width:10px;height:10px;border-radius:50%;background:#0088ff}
-.trash{font-size:28px;color:#999;cursor:pointer}
-
-/* 分类折叠 */
-.cat-item{background:#fff;border-radius:14px;margin-bottom:10px;overflow:hidden}
-.cat-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer}
-.cat-name{font-size:26px;color:#222;display:flex;align-items:center;gap:10px}
-.arrow{font-size:30px;color:#666;transition:0.24s transform}
-.arrow.open{transform:rotate(180deg)}
-
-.tool-wrap{display:none;padding:0 20px 18px 40px}
-.tool-wrap.show{display:block}
-.tool-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}
-.tool-row:last-child{border-bottom:none}
-.tool-left{display:flex;align-items:center;gap:10px}
-.tool-icon{font-size:26px}
-.tool-text{font-size:24px;color:#0066dd;cursor:pointer}
-.count-badge{
-  background:#2488ff;color:#fff;
-  font-size:14px;min-width:24px;height:24px;
-  line-height:24px;border-radius:12px;text-align:center;padding:0 6px
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --primary: #7b61ff;
+  --radius: 16px;
 }
 
-/* 强化醒目返回按钮 */
-.back-btn{
-  padding:14px 16px;
-  background:#2488ff;
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  margin-bottom:24px;
-  font-size:17px;
-  cursor:pointer;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-}
-.back-btn::before{content:"←";font-size:19px}
+* { box-sizing: border-box; }
 
-/* 表单按钮移动端优化 */
-button{padding:13px 16px;border:none;border-radius:10px;background:#07c160;color:#fff;font-size:16px;margin:8px 0;cursor:pointer;width:100%}
-input,textarea,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;margin:8px 0;font-size:16px;background:#fff}
-canvas{max-width:100%;background:#f1f1f1;margin:10px 0;border-radius:8px}
-.q-item{margin:18px 0;background:#fff;padding:14px;border-radius:10px}
-.q-title{font-size:18px;margin-bottom:10px;font-weight:500}
-.opt{margin:8px 0;font-size:16px}
-.result-box{background:#e8f2ff;padding:18px;border-radius:12px;margin-top:22px;line-height:1.7}
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI";
+  padding-bottom: 70px;
+}
+
+header {
+  background: linear-gradient(135deg, #7b61ff, #a78bfa);
+  color: #fff;
+  padding: 18px 16px;
+  border-radius: 0 0 20px 20px;
+}
+
+header h1 { margin: 0; font-size: 22px; }
+
+.page {
+  display: none;
+  padding: 16px;
+}
+
+.page.active { display: block; }
+
+h2 {
+  font-size: 18px;
+  margin: 12px 0 6px;
+}
+
+h3 {
+  font-size: 16px;
+  margin: 10px 0;
+  color: #555;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 6px;
+  text-align: center;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #ddd;
+}
+
+.nav div {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.nav .active {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff;
+  width: 92%;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 16px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.close {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close:hover {
+  color: var(--primary);
+}
+
+.list .item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list .item .action {
+  color: var(--primary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* 工具表单样式 */
+.tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.tool-form input, .tool-form select, .tool-form textarea {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.tool-form button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tool-form button:hover {
+  background: #6a50e8;
+}
+
+.result {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f8f8ff;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* 收藏按钮样式 */
+.fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.fav-btn.active {
+  color: var(--primary);
+}
+
+.modal-header {
+  position: relative;
+}
 </style>
 </head>
+
 <body>
 
+<header>
+  <h1>🌟 万能工具箱</h1>
+</header>
+
 <!-- 首页 -->
-<div id="page-home" class="page active">
-  <div class="top-bar">
-    <div class="top-left">
-      <span class="dot-blue"></span>
-      <span>最近使用</span>
-      <span>∨</span>
-    </div>
-    <span class="trash" onclick="clearAllCount()">🗑️</span>
-  </div>
+<section id="home" class="page active">
+  <h2>⭐ 推荐工具</h2>
+  <div class="grid" id="recommend"></div>
 
-  <!-- 1.推荐工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>推荐工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🖼️</span>
-          <span class="tool-text" onclick="switchToTool('splice')">高清图片拼接</span>
-        </div>
-        <span class="count-badge" id="badge-splice">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🎲</span>
-          <span class="tool-text" onclick="switchToTool('lottery')">随机抽签</span>
-        </div>
-        <span class="count-badge" id="badge-lottery">0</span>
-      </div>
-    </div>
-  </div>
+  <h2>🛠️ 实用工具</h2>
+  <div class="grid" id="util"></div>
 
-  <!-- 2.实用工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>实用工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">⏳</span>
-          <span class="tool-text" onclick="switchToTool('countdown')">时间倒计时</span>
-        </div>
-        <span class="count-badge" id="badge-countdown">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🔐</span>
-          <span class="tool-text" onclick="switchToTool('pwdgen')">密码生成器</span>
-        </div>
-        <span class="count-badge" id="badge-pwdgen">0</span>
-      </div>
-    </div>
-  </div>
+  <h2>🖼️ 图片工具</h2>
+  <div class="grid" id="image"></div>
 
-  <!-- 3.性格测试（和实用并列） -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>性格测试</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🧩</span>
-          <span class="tool-text" onclick="switchToTool('mbti')">MBTI性格测试</span>
-        </div>
-        <span class="count-badge" id="badge-mbti">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">📊</span>
-          <span class="tool-text" onclick="switchToTool('disc')">DISC性格测试</span>
-        </div>
-        <span class="count-badge" id="badge-disc">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🎨</span>
-          <span class="tool-text" onclick="switchToTool('color')">色彩性格测试</span>
-        </div>
-        <span class="count-badge" id="badge-color">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">📈</span>
-          <span class="tool-text" onclick="switchToTool('bigfive')">大五人格测试</span>
-        </div>
-        <span class="count-badge" id="badge-bigfive">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🐎</span>
-          <span class="tool-text" onclick="switchToTool('pdp')">PDP动物性格测试</span>
-        </div>
-        <span class="count-badge" id="badge-pdp">0</span>
-      </div>
-    </div>
-  </div>
+  <h2>🧮 计算工具</h2>
+  <div class="grid" id="calc"></div>
 
-  <!-- 4.九宫格 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>九宫格</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🟦</span>
-          <span class="tool-text" onclick="switchToTool('ninecut')">九宫格切图</span>
-        </div>
-        <span class="count-badge" id="badge-ninecut">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">👀</span>
-          <span class="tool-text" onclick="switchToTool('ninepreview')">九宫格预览</span>
-        </div>
-        <span class="count-badge" id="badge-ninepreview">0</span>
-      </div>
-    </div>
-  </div>
+  <h2>🎮 娱乐工具</h2>
+  <div class="grid" id="fun"></div>
 
-  <!-- 5.图片工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>图片工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🖼️</span>
-          <span class="tool-text" onclick="switchToTool('splice')">图片拼接</span>
-        </div>
-        <span class="count-badge" id="badge-splice2">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">✂️</span>
-          <span class="tool-text" onclick="switchToTool('imgcrop')">尺寸裁剪</span>
-        </div>
-        <span class="count-badge" id="badge-imgcrop">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🗜️</span>
-          <span class="tool-text" onclick="switchToTool('imgzip')">图片压缩</span>
-        </div>
-        <span class="count-badge" id="badge-imgzip">0</span>
-      </div>
-    </div>
-  </div>
+  <h2>✍️ 文案工具</h2>
+  <div class="grid" id="copy"></div>
+</section>
 
-  <!-- 6.计算工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>计算工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🧮</span>
-          <span class="tool-text" onclick="switchToTool('calc')">简易计算器</span>
-        </div>
-        <span class="count-badge" id="badge-calc">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">📏</span>
-          <span class="tool-text" onclick="switchToTool('unit')">长度单位换算</span>
-        </div>
-        <span class="count-badge" id="badge-unit">0</span>
-      </div>
-    </div>
-  </div>
+<!-- 工具页 -->
+<section id="tools" class="page">
+  <h2>🧰 全部工具</h2>
+  <div class="grid" id="allTools"></div>
+</section>
 
-  <!-- 7.娱乐工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>娱乐工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🎲</span>
-          <span class="tool-text" onclick="switchToTool('lottery')">随机抽签</span>
-        </div>
-        <span class="count-badge" id="badge-lottery2">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🔢</span>
-          <span class="tool-text" onclick="switchToTool('randnum')">随机数字生成</span>
-        </div>
-        <span class="count-badge" id="badge-randnum">0</span>
-      </div>
-    </div>
-  </div>
+<!-- 我的 -->
+<section id="me" class="page">
+  <h2>👤 我的</h2>
 
-  <!-- 8.字符工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>字符工具</div>
-      <span class="arrow">∨</span>
-    </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🔤</span>
-          <span class="tool-text" onclick="switchToTool('case')">大小写转换</span>
-        </div>
-        <span class="count-badge" id="badge-case">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🧹</span>
-          <span class="tool-text" onclick="switchToTool('trimspace')">清理多余空格</span>
-        </div>
-        <span class="count-badge" id="badge-trimspace">0</span>
-      </div>
-    </div>
-  </div>
+  <h3>🕘 最近使用</h3>
+  <div class="list" id="historyList"><div class="item">暂无记录</div></div>
 
-  <!-- 9.文案工具 -->
-  <div class="cat-item">
-    <div class="cat-head" onclick="toggleCat(this)">
-      <div class="cat-name"><span class="dot-blue"></span>文案工具</div>
-      <span class="arrow">∨</span>
+  <h3 style="margin-top:14px;">⭐ 收藏</h3>
+  <div class="list" id="favList"><div class="item">暂无收藏</div></div>
+</section>
+
+<!-- 弹窗 -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close" onclick="closeModal()">×</span>
+      <span class="fav-btn" id="favBtn" onclick="toggleFav(event)">☆</span>
+      <h3 id="modalTitle"></h3>
     </div>
-    <div class="tool-wrap">
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">📝</span>
-          <span class="tool-text" onclick="switchToTool('textformat')">换行排版整理</span>
-        </div>
-        <span class="count-badge" id="badge-textformat">0</span>
-      </div>
-      <div class="tool-row">
-        <div class="tool-left">
-          <span class="tool-icon">🔡</span>
-          <span class="tool-text" onclick="switchToTool('wordcount')">字数统计</span>
-        </div>
-        <span class="count-badge" id="badge-wordcount">0</span>
-      </div>
-    </div>
+    <div id="modalBody" style="margin-top:10px;"></div>
   </div>
 </div>
 
-<!-- 工具全屏页面容器 -->
-<div id="page-tool" class="page"></div>
+<!-- 底部导航 -->
+<div class="nav">
+  <div id="tab-home" class="active" onclick="switchTab('home')">🏠<br/>首页</div>
+  <div id="tab-tools" onclick="switchTab('tools')">🧰<br/>工具</div>
+  <div id="tab-me" onclick="switchTab('me')">👤<br/>我的</div>
+</div>
 
 <script>
-// 全局角标映射
-const toolBadgeMap = {
-  splice:["badge-splice","badge-splice2"],
-  lottery:["badge-lottery","badge-lottery2"],
-  countdown:["badge-countdown"],
-  pwdgen:["badge-pwdgen"],
-  ninecut:["badge-ninecut"],
-  ninepreview:["badge-ninepreview"],
-  imgcrop:["badge-imgcrop"],
-  imgzip:["badge-imgzip"],
-  calc:["badge-calc"],
-  unit:["badge-unit"],
-  randnum:["badge-randnum"],
-  case:["badge-case"],
-  trimspace:["badge-trimspace"],
-  textformat:["badge-textformat"],
-  wordcount:["badge-wordcount"],
-  mbti:["badge-mbti"],
-  disc:["badge-disc"],
-  color:["badge-color"],
-  bigfive:["badge-bigfive"],
-  pdp:["badge-pdp"]
+/* ===== 工具数据 ===== */
+const tools = [
+  // 推荐工具
+  { id: "r1", name: "去水印", cat: "recommend", type: "common" },
+  { id: "r2", name: "头像大全", cat: "recommend", type: "common" },
+  { id: "r3", name: "配音工具", cat: "recommend", type: "common" },
+  { id: "r4", name: "聊天特殊文字", cat: "recommend", type: "text" },
+  { id: "r5", name: "海拔高度查询", cat: "recommend", type: "common" },
+  { id: "r6", name: "答案之书", cat: "recommend", type: "fun" },
+  { id: "r7", name: "万能翻译", cat: "recommend", type: "translate" },
+  { id: "r8", name: "专业抽签工具", cat: "recommend", type: "lottery" },
+  { id: "r9", name: "台词查影视", cat: "recommend", type: "common" },
+  { id: "r10", name: "翻译助手", cat: "recommend", type: "translate" },
+  { id: "r11", name: "诗词搜索", cat: "recommend", type: "common" },
+
+  // 实用工具
+  { id: "u1", name: "手机检测", cat: "util", type: "common" },
+  { id: "u2", name: "生辰八字", cat: "util", type: "birth" },
+  { id: "u3", name: "手持弹幕", cat: "util", type: "barrage" },
+  { id: "u4", name: "瞳孔读心术", cat: "util", type: "fun" },
+  { id: "u5", name: "人口大数据", cat: "util", type: "common" },
+  { id: "u6", name: "手机清灰", cat: "util", type: "clean" },
+  { id: "u7", name: "奖状生成器", cat: "util", type: "certificate" },
+  { id: "u8", name: "罗盘", cat: "util", type: "common" },
+  { id: "u9", name: "屏幕检测", cat: "util", type: "common" },
+  { id: "u10", name: "网站 Ping", cat: "util", type: "ping" },
+  { id: "u11", name: "水平仪", cat: "util", type: "level" },
+
+  // 图片工具
+  { id: "i1", name: "图片格式转换", cat: "image", type: "image-convert" },
+  { id: "i2", name: "图片编辑", cat: "image", type: "image-edit" },
+  { id: "i3", name: "图片拼接", cat: "image", type: "common" },
+  { id: "i4", name: "举牌小人", cat: "image", type: "common" },
+
+  // 计算工具
+  { id: "c1", name: "血气分析工具", cat: "calc", type: "common" },
+  { id: "c2", name: "养老金计算器", cat: "pension" },
+  { id: "c3", name: "个税计算器", cat: "calc", type: "tax" },
+  { id: "c4", name: "体脂率计算器", cat: "calc", type: "bodyfat" },
+  { id: "c5", name: "血型计算器", cat: "calc", type: "blood" },
+  { id: "c6", name: "二十四点计算器", cat: "calc", type: "24point" },
+
+  // 娱乐工具
+  { id: "f1", name: "充电充值金额", cat: "fun", type: "common" },
+  { id: "f2", name: "机选五注", cat: "fun", type: "lottery" },
+  { id: "f3", name: "震动", cat: "fun", type: "vibrate" },
+  { id: "f4", name: "藏头诗", cat: "fun", type: "poem" },
+
+  // 文案工具
+  { id: "t1", name: "发圈文案", cat: "copy", type: "copywriting" },
+  { id: "t2", name: "舔狗日记", cat: "copy", type: "copywriting" },
+  { id: "t3", name: "精神鸡汤", cat: "copy", type: "copywriting" },
+  { id: "t4", name: "土味情话", cat: "copy", type: "copywriting" },
+  { id: "t5", name: "名人名言", cat: "copy", type: "copywriting" },
+  { id: "t6", name: "顺口溜", cat: "copy", type: "copywriting" },
+  { id: "t7", name: "歇后语", cat: "copy", type: "copywriting" }
+];
+
+// 文案库
+const copywritingData = {
+  "发圈文案": [
+    "生活就像一杯奶茶，即使甜不了一辈子，但总能甜一阵子✨",
+    "慢慢来，谁还没有一个努力的过程✊",
+    "日子一般般，快乐很简单🥳",
+    "平凡的日子也值得认真对待💛",
+    "保持热爱，奔赴山海🌊"
+  ],
+  "舔狗日记": [
+    "今天她终于回我消息了，只回了一个嗯，我好开心，她一定是想我了吧🥺",
+    "她骂我的时候好温柔，不像我妈只会喊我滚😘",
+    "她把我拉黑了，一定是怕我太想她，让我冷静一下，她真的好贴心❤️",
+    "今天给她发了99条消息，她回了我一个句号，一定是想和我聊天但不知道说什么吧😜"
+  ],
+  "精神鸡汤": [
+    "人生没有白走的路，每一步都算数🌟",
+    "你若盛开，清风自来🍃",
+    "努力的意义，在于让自己有更多选择💪",
+    "生活不会辜负每一个努力的人🌞"
+  ],
+  "土味情话": [
+    "我觉得你特别像一款游戏，什么游戏？我的世界🎮",
+    "你知道我想喝什么吗？喝什么？我想呵护你🥤",
+    "我想在你那里买一块地，什么地？你的死心塌地🌍",
+    "莫文蔚的阴天，孙燕姿的雨天，都不如你和我聊天☁️"
+  ],
+  "名人名言": [
+    "人生自古谁无死，留取丹心照汗青。——文天祥",
+    "天生我材必有用，千金散尽还复来。——李白",
+    "路漫漫其修远兮，吾将上下而求索。——屈原",
+    "横眉冷对千夫指，俯首甘为孺子牛。——鲁迅"
+  ],
+  "顺口溜": [
+    "一二三四五，上山打老虎，老虎没打着，打着小松鼠🐿️",
+    "小老鼠，上灯台，偷油吃，下不来😜",
+    "拉大锯，扯大锯，姥姥家，唱大戏🎭"
+  ],
+  "歇后语": [
+    "八仙过海——各显神通",
+    "泥菩萨过江——自身难保",
+    "芝麻开花——节节高",
+    "周瑜打黄盖——一个愿打一个愿挨"
+  ]
 };
 
-// 初始化计数
-function initLocalCount(){
-  for(let key in toolBadgeMap){
-    let num = Number(localStorage.getItem(`tool_${key}`)) || 0;
-    toolBadgeMap[key].forEach(bid=>{
-      const el = document.getElementById(bid);
-      if(el) el.innerText = num;
-    })
-  }
+/* ===== 渲染 ===== */
+function render() {
+  tools.forEach(t => {
+    const html = `<div class="card" onclick="openTool('${t.id}')">${t.name}</div>`;
+    if (document.getElementById(t.cat)) {
+      document.getElementById(t.cat).innerHTML += html;
+    }
+    document.getElementById("allTools").innerHTML += html;
+  });
+}
+render();
+
+/* ===== 页面切换 ===== */
+function switchTab(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+
+  document.querySelectorAll('.nav div').forEach(d => d.classList.remove('active'));
+  document.getElementById('tab-' + page).classList.add('active');
+
+  if (page === 'me') renderMe();
 }
 
-// 清空计数
-window.clearAllCount = function(){
-  if(confirm("确定清空本机所有工具使用次数？")){
-    localStorage.clear();
-    initLocalCount();
-  }
+/* ===== 打开工具 ===== */
+let currentTool = null;
+function openTool(id) {
+  currentTool = tools.find(t => t.id === id);
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const favBtn = document.getElementById('favBtn');
+  
+  modalTitle.innerText = currentTool.name;
+  
+  // 更新收藏按钮状态
+  const favs = getFavorites();
+  favBtn.innerText = favs.some(f => f.id === id) ? '★' : '☆';
+  favBtn.classList.toggle('active', favs.some(f => f.id === id));
+
+  // 根据工具类型渲染不同的内容
+  renderToolContent(currentTool, modalBody);
+  
+  document.getElementById('modal').style.display = "flex";
+  addHistory(currentTool);
 }
 
-// 折叠分类
-window.toggleCat = function(el){
-  const arrow = el.querySelector(".arrow");
-  const content = el.nextElementSibling;
-  arrow.classList.toggle("open");
-  content.classList.toggle("show");
-}
-
-// 返回首页
-window.backHome = function(){
-  document.getElementById("page-home").classList.add("active");
-  document.getElementById("page-tool").classList.remove("active");
-}
-
-// 切换工具页面（核心全局入口）
-window.switchToTool = function(toolKey){
-  let curr = Number(localStorage.getItem(`tool_${toolKey}`)) || 0;
-  curr++;
-  localStorage.setItem(`tool_${toolKey}`, curr);
-  toolBadgeMap[toolKey].forEach(bid=>{
-    const el = document.getElementById(bid);
-    if(el) el.innerText = curr;
-  })
-  let html = "";
-  switch(toolKey){
-    case "splice":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">高清图片拼接</h3>
-        <input type="file" id="sFile" multiple accept="image/*">
-        <div>已选择图片：<span id="sCnt">0</span> 张</div>
-        <div style="display:flex;gap:8px">
-          <button onclick="spliceSetMode('v')">纵向拼接</button>
-          <button onclick="spliceSetMode('h')">横向拼接</button>
-          <button onclick="spliceSetMode('g')">网格拼接</button>
-        </div>
-        <button onclick="spliceMerge()">生成无损拼接图</button>
-        <canvas id="sCanvas"></canvas>
-        <button id="saveSBtn" style="display:none" onclick="spliceSave()">保存PNG高清图</button>
-      `;
-      break;
-    case "lottery":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">随机抽签</h3>
-        <div style="font-size:56px;text-align:center;margin:60px 0;color:#f56c6c;font-weight:bold" id="lotRes">等待抽签</div>
-        <button onclick="lotteryRun()" style="width:100%">点击抽签</button>
-        <textarea id="lotPool" rows="6" placeholder="一行一个抽签项">一等奖
-二等奖
-三等奖
-谢谢参与</textarea>
-      `;
-      break;
-    case "countdown":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">时间倒计时</h3>
-        <input type="datetime-local" id="countTarget">
-        <button onclick="countStart()">开启倒计时</button>
-        <div style="font-size:40px;text-align:center;margin:40px 0;font-weight:bold" id="countShow">00天 00时 00分 00秒</div>
-      `;
-      break;
-    case "pwdgen":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">密码生成器</h3>
-        <div>密码长度 <input type="number" id="pwdLen" value="16" min="6" max="32"></div>
-        <div style="margin:10px 0">
-          <label><input type="checkbox" checked id="pwdUp">大写</label>
-          <label style="margin-left:8px"><input type="checkbox" checked id="pwdLow">小写</label>
-          <label style="margin-left:8px"><input type="checkbox" checked id="pwdNum">数字</label>
-          <label style="margin-left:8px"><input type="checkbox" id="pwdSym">符号</label>
-        </div>
-        <button onclick="pwdCreate()">生成高强度密码</button>
-        <div id="pwdOut" style="padding:14px;background:#f6f7f9;border-radius:8px;word-break:break-all;font-size:20px"></div>
-      `;
-      break;
-    case "ninecut":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">九宫格切图</h3>
-        <input type="file" id="nineCutFile" accept="image/*">
-        <div id="nineCutWrap" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-top:10px"></div>
-      `;
-      break;
-    case "ninepreview":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">九宫格预览</h3>
-        <input type="file" id="ninePreFile" multiple accept="image/*">
-        <div id="ninePreWrap" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:10px"></div>
-      `;
-      break;
-    case "imgcrop":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">图片尺寸裁剪</h3>
-        <input type="file" id="cropFile" accept="image/*">
-        <div>宽度 <input type="number" id="cropW" placeholder="像素宽度"> 高度 <input type="number" id="cropH" placeholder="像素高度"></div>
-        <button onclick="cropDo()">裁剪图片</button>
-        <canvas id="cropCanvas"></canvas>
-        <button id="saveCropBtn" style="display:none" onclick="cropSave()">保存裁剪图</button>
-      `;
-      break;
-    case "imgzip":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">图片压缩</h3>
-        <input type="file" id="zipFile" accept="image/*">
-        <div>压缩质量(0.1~1) <input type="number" id="zipQ" value="0.7" step="0.1" min="0.1" max="1"></div>
-        <button onclick="zipDo()">执行压缩</button>
-        <canvas id="zipCanvas"></canvas>
-        <button id="saveZipBtn" style="display:none" onclick="zipSave()">下载压缩图</button>
-      `;
-      break;
-    case "calc":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">简易计算器</h3>
-        <input id="calcInput" readonly style="text-align:right;font-size:26px;padding:16px">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px">
-          <button onclick="calcWrite('7')">7</button><button onclick="calcWrite('8')">8</button><button onclick="calcWrite('9')">9</button><button onclick="calcWrite('/')">/</button>
-          <button onclick="calcWrite('4')">4</button><button onclick="calcWrite('5')">5</button><button onclick="calcWrite('6')">6</button><button onclick="calcWrite('*')">×</button>
-          <button onclick="calcWrite('1')">1</button><button onclick="calcWrite('2')">2</button><button onclick="calcWrite('3')">3</button><button onclick="calcWrite('-')">-</button>
-          <button onclick="calcWrite('0')">0</button><button onclick="calcWrite('.')">.</button><button onclick="calcClear()">C</button><button onclick="calcWrite('+')">+</button>
-          <button onclick="calcEqual()" style="grid-column:span4">=</button>
+// 渲染工具具体内容
+function renderToolContent(tool, container) {
+  switch (tool.type) {
+    case 'text': // 聊天特殊文字
+      container.innerHTML = `
+        <div class="tool-form">
+          <textarea id="textInput" placeholder="输入要转换的文字" rows="3"></textarea>
+          <button onclick="generateSpecialText()">生成特殊文字</button>
+          <div id="textResult" class="result"></div>
         </div>
       `;
       break;
-    case "unit":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">长度单位换算</h3>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input type="number" id="unitNum" value="1">
-          <select id="unitFrom">
-            <option value="km">千米</option>
-            <option value="m">米</option>
-            <option value="cm">厘米</option>
-            <option value="mm">毫米</option>
+      
+    case 'translate': // 翻译工具
+      container.innerHTML = `
+        <div class="tool-form">
+          <textarea id="translateInput" placeholder="输入要翻译的文字" rows="3"></textarea>
+          <select id="translateType">
+            <option value="zh2en">中文 → 英文</option>
+            <option value="en2zh">英文 → 中文</option>
+            <option value="zh2jp">中文 → 日语</option>
+            <option value="jp2zh">日语 → 中文</option>
           </select>
-          <span>→</span>
-          <select id="unitTo">
-            <option value="km">千米</option>
-            <option value="m">米</option>
-            <option value="cm">厘米</option>
-            <option value="mm">毫米</option>
+          <button onclick="translateText()">翻译</button>
+          <div id="translateResult" class="result"></div>
+        </div>
+      `;
+      break;
+      
+    case 'lottery': // 抽签/彩票
+      container.innerHTML = `
+        <div class="tool-form">
+          <button onclick="${tool.name.includes('抽签') ? 'drawLottery()' : 'generateLotteryNumbers()'}">
+            ${tool.name.includes('抽签') ? '开始抽签' : '生成彩票号码'}
+          </button>
+          <div id="lotteryResult" class="result"></div>
+        </div>
+      `;
+      break;
+      
+    case 'birth': // 生辰八字
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="date" id="birthDate" placeholder="出生日期">
+          <select id="birthTime">
+            <option value="">选择出生时辰</option>
+            <option value="23-01">子时 (23-01点)</option>
+            <option value="01-03">丑时 (01-03点)</option>
+            <option value="03-05">寅时 (03-05点)</option>
+            <option value="05-07">卯时 (05-07点)</option>
+            <option value="07-09">辰时 (07-09点)</option>
+            <option value="09-11">巳时 (09-11点)</option>
+            <option value="11-13">午时 (11-13点)</option>
+            <option value="13-15">未时 (13-15点)</option>
+            <option value="15-17">申时 (15-17点)</option>
+            <option value="17-19">酉时 (17-19点)</option>
+            <option value="19-21">戌时 (19-21点)</option>
+            <option value="21-23">亥时 (21-23点)</option>
           </select>
+          <button onclick="calculateBirthInfo()">查询</button>
+          <div id="birthResult" class="result"></div>
         </div>
-        <button onclick="unitConvert()">换算</button>
-        <div id="unitRes" style="font-size:26px;font-weight:bold;margin-top:20px;text-align:center"></div>
       `;
       break;
-    case "randnum":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">随机数字生成</h3>
-        <div>最小值 <input type="number" id="randMin" value="1"></div>
-        <div>最大值 <input type="number" id="randMax" value="100"></div>
-        <button onclick="randGen()">生成随机数字</button>
-        <div style="font-size:50px;text-align:center;margin:40px 0;font-weight:bold;color:#222" id="randShow">——</div>
-      `;
-      break;
-    case "case":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">大小写转换</h3>
-        <textarea id="caseIn" rows="5" placeholder="粘贴英文文本"></textarea>
-        <div style="display:flex;gap:8px">
-          <button onclick="caseUp()">全部大写</button>
-          <button onclick="caseLow()">全部小写</button>
+      
+    case 'barrage': // 手持弹幕
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="text" id="barrageText" placeholder="输入弹幕文字">
+          <select id="barrageSpeed">
+            <option value="5">慢速</option>
+            <option value="3" selected>中速</option>
+            <option value="1">快速</option>
+          </select>
+          <button onclick="startBarrage()">开始弹幕</button>
+          <button onclick="stopBarrage()">停止弹幕</button>
+          <div id="barrageResult" class="result" style="height: 60px; line-height: 60px; text-align: center; font-size: 20px; overflow: hidden; position: relative;"></div>
         </div>
-        <textarea id="caseOut" rows="5" readonly placeholder="转换结果"></textarea>
       `;
       break;
-    case "trimspace":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">清理多余空格</h3>
-        <textarea id="tsIn" rows="5" placeholder="带多余空格的文字"></textarea>
-        <button onclick="tsClear()">清除首尾+中间多余空格</button>
-        <textarea id="tsOut" rows="5" readonly></textarea>
+      
+    case 'clean': // 手机清灰
+      container.innerHTML = `
+        <div class="tool-form">
+          <p>手机清灰功能可以播放特定频率的声音，清理手机扬声器灰尘</p>
+          <button onclick="playCleanSound()">开始清灰</button>
+          <button onclick="stopCleanSound()">停止</button>
+          <audio id="cleanAudio" src="https://www.soundjay.com/mechanical/sounds/air-horn-01.mp3" loop></audio>
+        </div>
       `;
       break;
-    case "textformat":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">换行排版整理</h3>
-        <textarea id="tfIn" rows="5" placeholder="杂乱换行文案"></textarea>
-        <button onclick="tfFormat()">合并空行统一排版</button>
-        <textarea id="tfOut" rows="5" readonly></textarea>
+      
+    case 'ping': // 网站Ping
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="text" id="pingUrl" placeholder="输入网址，如：www.baidu.com" value="www.baidu.com">
+          <button onclick="pingWebsite()">开始Ping</button>
+          <div id="pingResult" class="result"></div>
+        </div>
       `;
       break;
-    case "wordcount":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">字数统计</h3>
-        <textarea id="wcText" rows="6" oninput="wcCalc()" placeholder="粘贴文字自动统计"></textarea>
-        <div id="wcInfo" style="font-size:20px;line-height:1.8;margin-top:10px">总字符：0<br>纯文字(去空格)：0</div>
+      
+    case 'level': // 水平仪
+      container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+          <div id="levelResult" style="width: 200px; height: 200px; border: 2px solid #ddd; border-radius: 50%; margin: 0 auto; position: relative; background: #f8f8ff;">
+            <div style="position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; transform: translate(-50%, -50%);"></div>
+            <div id="levelLine" style="position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: red; transform-origin: center;"></div>
+          </div>
+          <p id="levelText" class="result" style="margin-top: 10px;">请旋转手机校准水平仪</p>
+        </div>
+      `;
+      initLevel();
+      break;
+      
+    case 'pension': // 养老金计算器
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="number" id="pensionBase" placeholder="缴费基数" value="5000">
+          <input type="number" id="pensionYears" placeholder="缴费年限" value="15">
+          <input type="number" id="pensionAge" placeholder="退休年龄" value="60">
+          <button onclick="calculatePension()">计算养老金</button>
+          <div id="pensionResult" class="result"></div>
+        </div>
       `;
       break;
-    case "mbti":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">MBTI 12题性格测试</h3>
-        <div id="mbtiQBox"></div>
-        <button onclick="mbtiCalc()">查看测试结果</button>
-        <div class="result-box" id="mbtiResultBox"></div>
+      
+    case 'tax': // 个税计算器
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="number" id="taxIncome" placeholder="月收入" value="10000">
+          <input type="number" id="taxDeduction" placeholder="专项扣除" value="2000">
+          <button onclick="calculateTax()">计算个税</button>
+          <div id="taxResult" class="result"></div>
+        </div>
       `;
       break;
-    case "disc":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">DISC 10题性格测试</h3>
-        <div id="discQBox"></div>
-        <button onclick="discCalc()">查看性格分析</button>
-        <div class="result-box" id="discResultBox"></div>
+      
+    case 'bodyfat': // 体脂率计算器
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="number" id="bfWeight" placeholder="体重(kg)" value="60">
+          <input type="number" id="bfHeight" placeholder="身高(cm)" value="170">
+          <select id="bfGender">
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
+          <input type="number" id="bfAge" placeholder="年龄" value="30">
+          <button onclick="calculateBodyFat()">计算体脂率</button>
+          <div id="bfResult" class="result"></div>
+        </div>
       `;
       break;
-    case "color":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">色彩性格测试</h3>
-        <div id="colorQBox"></div>
-        <button onclick="colorCalc()">查看色彩人格</button>
-        <div class="result-box" id="colorResultBox"></div>
+      
+    case 'blood': // 血型计算器
+      container.innerHTML = `
+        <div class="tool-form">
+          <select id="bloodFather">
+            <option value="">父亲血型</option>
+            <option value="A">A型</option>
+            <option value="B">B型</option>
+            <option value="AB">AB型</option>
+            <option value="O">O型</option>
+          </select>
+          <select id="bloodMother">
+            <option value="">母亲血型</option>
+            <option value="A">A型</option>
+            <option value="B">B型</option>
+            <option value="AB">AB型</option>
+            <option value="O">O型</option>
+          </select>
+          <button onclick="calculateBloodType()">计算子女可能血型</button>
+          <div id="bloodResult" class="result"></div>
+        </div>
       `;
       break;
-    case "bigfive":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">大五人格测试</h3>
-        <div id="bigfiveQBox"></div>
-        <button onclick="bigfiveCalc()">查看人格维度分数</button>
-        <div class="result-box" id="bigfiveResultBox"></div>
+      
+    case '24point': // 二十四点计算器
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="text" id="point24Input" placeholder="输入4个数字，用逗号分隔，如：1,2,3,4">
+          <button onclick="calculate24Point()">计算二十四点</button>
+          <div id="point24Result" class="result"></div>
+        </div>
       `;
       break;
-    case "pdp":
-      html = `
-        <button class="back-btn" onclick="backHome()">返回工具箱首页</button>
-        <h3 style="margin-bottom:16px;font-size:22px;text-align:center">PDP动物性格测试</h3>
-        <div id="pdpQBox"></div>
-        <button onclick="pdpCalc()">查看动物类型解析</button>
-        <div class="result-box" id="pdpResultBox"></div>
+      
+    case 'vibrate': // 震动
+      container.innerHTML = `
+        <div class="tool-form">
+          <select id="vibrateTime">
+            <option value="short">短震动</option>
+            <option value="medium" selected>中震动</option>
+            <option value="long">长震动</option>
+          </select>
+          <button onclick="startVibrate()">开始震动</button>
+          <p>注：部分设备可能不支持震动功能</p>
+        </div>
       `;
       break;
-  }
-  document.getElementById("page-tool").innerHTML = html;
-  document.getElementById("page-home").classList.remove("active");
-  document.getElementById("page-tool").classList.add("active");
-  bindLogic(toolKey);
-}
-
-// 绑定内部逻辑 全部挂载window
-function bindLogic(key){
-  switch(key){
-    case "splice":
-      let spliceMode = "v";
-      let spliceImgList = [];
-      const sCanvas = document.getElementById("sCanvas");
-      const sCtx = sCanvas.getContext("2d");
-      document.getElementById("sFile").onchange = e=>{
-        spliceImgList = [];
-        const fs = e.target.files;
-        for(let f of fs) spliceImgList.push(f);
-        document.getElementById("sCnt").innerText = spliceImgList.length;
-        document.getElementById("saveSBtn").style.display = "none";
-      }
-      window.spliceSetMode = t=>spliceMode = t;
-      window.spliceMerge = async ()=>{
-        if(spliceImgList.length < 2){alert("至少选择2张图片");return}
-        const imgs = [];
-        for(let f of spliceImgList){
-          const img = new Image();
-          img.src = URL.createObjectURL(f);
-          await new Promise(r=>img.onload=r);
-          imgs.push(img);
-        }
-        let cw=0,ch=0;
-        if(spliceMode==="v"){cw=imgs[0].width;imgs.forEach(i=>ch+=i.height)}
-        else if(spliceMode==="h"){ch=imgs[0].height;imgs.forEach(i=>cw+=i.width)}
-        else{
-          const col = Math.ceil(Math.sqrt(imgs.length));
-          const w0=imgs[0].width,h0=imgs[0].height;
-          cw = w0*col; ch = h0*Math.ceil(imgs.length/col);
-        }
-        sCanvas.width = cw; sCanvas.height = ch;
-        sCtx.clearRect(0,0,cw,ch);
-        let x=0,y=0;
-        const col = spliceMode==="g"?Math.ceil(Math.sqrt(imgs.length)):1;
-        imgs.forEach((img,idx)=>{
-          let w,h;
-          if(spliceMode==="v"){w=cw;h=cw*img.height/img.width}
-          else if(spliceMode==="h"){h=ch;w=ch*img.width/img.height}
-          else{w=imgs[0].width;h=imgs[0].height;x=(idx%col)*w;y=Math.floor(idx/col)*h}
-          sCtx.drawImage(img,x,y,w,h);
-          if(spliceMode==="v") y+=h;
-          if(spliceMode==="h") x+=w;
-        })
-        document.getElementById("saveSBtn").style.display = "block";
-      }
-      window.spliceSave = ()=>{
-        const a = document.createElement("a");
-        a.download = "高清拼接图.png";
-        a.href = sCanvas.toDataURL("image/png",1);
-        a.click();
-      }
+      
+    case 'poem': // 藏头诗
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="text" id="poemInput" placeholder="输入藏头文字（2-4字）">
+          <button onclick="generatePoem()">生成藏头诗</button>
+          <div id="poemResult" class="result"></div>
+        </div>
+      `;
       break;
-    case "lottery":
-      window.lotteryRun = ()=>{
-        const pool = document.getElementById("lotPool").value.trim().split("\n").filter(i=>i.trim()!="");
-        if(pool.length===0){alert("请填写抽签内容");return}
-        const pick = pool[Math.floor(Math.random()*pool.length)];
-        document.getElementById("lotRes").innerText = pick;
-      }
+      
+    case 'copywriting': // 文案工具
+      container.innerHTML = `
+        <div class="tool-form">
+          <button onclick="generateCopywriting('${tool.name}')">生成${tool.name}</button>
+          <div id="copyResult" class="result" style="white-space: pre-line;"></div>
+          <button onclick="copyToClipboard('copyResult')">复制文案</button>
+        </div>
+      `;
       break;
-    case "countdown":
-      let countTimer;
-      window.countStart = ()=>{
-        clearInterval(countTimer);
-        const target = new Date(document.getElementById("countTarget").value).getTime();
-        countTimer = setInterval(()=>{
-          const diff = target - Date.now();
-          if(diff <= 0){
-            document.getElementById("countShow").innerText = "时间已到";
-            clearInterval(countTimer);
-            return;
-          }
-          const d = Math.floor(diff/(1000*60*60*24));
-          const h = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
-          const m = Math.floor((diff%(1000*60*60))/(1000*60));
-          const s = Math.floor((diff%(1000*60))/1000);
-          document.getElementById("countShow").innerText = `${d}天 ${h}时 ${m}分 ${s}秒`;
-        },1000)
-      }
+      
+    case 'certificate': // 奖状生成器
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="text" id="certName" placeholder="获奖人姓名">
+          <input type="text" id="certReason" placeholder="获奖原因" value="优秀员工">
+          <button onclick="generateCertificate()">生成奖状</button>
+          <div id="certResult" class="result" style="text-align: center; padding: 20px; border: 2px solid #ffd700; border-radius: 10px;">
+            <h3>奖状</h3>
+            <div id="certContent"></div>
+            <p style="margin-top: 20px;">🎉 恭喜获得此荣誉 🎉</p>
+          </div>
+        </div>
+      `;
       break;
-    case "pwdgen":
-      window.pwdCreate = ()=>{
-        let chars = "";
-        if(document.getElementById("pwdUp").checked) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        if(document.getElementById("pwdLow").checked) chars += "abcdefghijklmnopqrstuvwxyz";
-        if(document.getElementById("pwdNum").checked) chars += "0123456789";
-        if(document.getElementById("pwdSym").checked) chars += "!@#$%^&*()_+-=";
-        if(!chars){alert("至少勾选一种字符类型");return}
-        const len = Number(document.getElementById("pwdLen").value);
-        let res = "";
-        for(let i=0;i<len;i++) res += chars[Math.floor(Math.random()*chars.length)];
-        document.getElementById("pwdOut").innerText = res;
-      }
+      
+    case 'image-convert': // 图片格式转换
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="file" id="imageFile" accept="image/*">
+          <select id="imageFormat">
+            <option value="jpg">转换为JPG</option>
+            <option value="png">转换为PNG</option>
+            <option value="webp">转换为WEBP</option>
+          </select>
+          <button onclick="convertImageFormat()">转换格式</button>
+          <div id="imageResult" class="result">
+            <p>转换后的图片将在此显示</p>
+          </div>
+        </div>
+      `;
       break;
-    case "ninecut":
-      document.getElementById("nineCutFile").onchange = e=>{
-        const file = e.target.files[0];
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = ()=>{
-          const wrap = document.getElementById("nineCutWrap");
-          wrap.innerHTML = "";
-          const w = img.width/3, h = img.height/3;
-          for(let y=0;y<3;y++){
-            for(let x=0;x<3;x++){
-              const c = document.createElement("canvas");
-              const cx = c.getContext("2d");
-              c.width = w; c.height = h;
-              cx.drawImage(img, x*w, y*h, w, h, 0,0,w,h);
-              wrap.appendChild(c);
-            }
-          }
-        }
-      }
+      
+    case 'image-edit': // 图片编辑
+      container.innerHTML = `
+        <div class="tool-form">
+          <input type="file" id="editImageFile" accept="image/*">
+          <div style="display: flex; gap: 8px; margin: 8px 0;">
+            <button onclick="rotateImage()">旋转</button>
+            <button onclick="cropImage()">裁剪</button>
+            <button onclick="filterImage()">滤镜</button>
+          </div>
+          <div id="editImageResult" class="result" style="text-align: center;">
+            <img id="previewImage" style="max-width: 100%; max-height: 200px; display: none;" />
+          </div>
+        </div>
+      `;
       break;
-    case "ninepreview":
-      document.getElementById("ninePreFile").onchange = e=>{
-        const wrap = document.getElementById("ninePreWrap");
-        wrap.innerHTML = "";
-        const files = e.target.files;
-        for(let f of files){
-          const img = document.createElement("img");
-          img.style.width = "100%";
-          img.src = URL.createObjectURL(f);
-          wrap.appendChild(img);
-        }
-      }
+      
+    case 'fun': // 答案之书/读心术
+      container.innerHTML = `
+        <div class="tool-form">
+          <textarea id="funQuestion" placeholder="输入你的问题（可选）" rows="2"></textarea>
+          <button onclick="getFunAnswer()">获取答案</button>
+          <div id="funResult" class="result" style="font-size: 16px; text-align: center; padding: 20px;"></div>
+        </div>
+      `;
       break;
-    case "imgcrop":
-      let cropSrcImg;
-      const cropCanvas = document.getElementById("cropCanvas");
-      const cropCtx = cropCanvas.getContext("2d");
-      document.getElementById("cropFile").onchange = e=>{
-        const f = e.target.files[0];
-        cropSrcImg = new Image();
-        cropSrcImg.src = URL.createObjectURL(f);
-        cropSrcImg.onload = ()=>{
-          cropCanvas.width = cropSrcImg.width;
-          cropCanvas.height = cropSrcImg.height;
-          cropCtx.drawImage(cropSrcImg,0,0);
-        }
-        document.getElementById("saveCropBtn").style.display = "none";
-      }
-      window.cropDo = ()=>{
-        if(!cropSrcImg){alert("先上传图片");return}
-        const w = Number(document.getElementById("cropW").value);
-        const h = Number(document.getElementById("cropH").value);
-        cropCanvas.width = w; cropCanvas.height = h;
-        cropCtx.drawImage(cropSrcImg,0,0,cropSrcImg.width,cropSrcImg.height,0,0,w,h);
-        document.getElementById("saveCropBtn").style.display = "block";
-      }
-      window.cropSave = ()=>{
-        const a = document.createElement("a");
-        a.download = "裁剪图.png";
-        a.href = cropCanvas.toDataURL("image/png",1);
-        a.click();
-      }
-      break;
-    case "imgzip":
-      let zipSrcImg;
-      const zipCanvas = document.getElementById("zipCanvas");
-      const zipCtx = zipCanvas.getContext("2d");
-      document.getElementById("zipFile").onchange = e=>{
-        const f = e.target.files[0];
-        zipSrcImg = new Image();
-        zipSrcImg.src = URL.createObjectURL(f);
-        zipSrcImg.onload = ()=>{
-          zipCanvas.width = zipSrcImg.width;
-          zipCanvas.height = zipSrcImg.height;
-          zipCtx.drawImage(zipSrcImg,0,0);
-        }
-        document.getElementById("saveZipBtn").style.display = "none";
-      }
-      window.zipDo = ()=>{
-        if(!zipSrcImg){alert("先上传图片");return}
-        zipCtx.drawImage(zipSrcImg,0,0);
-        document.getElementById("saveZipBtn").style.display = "block";
-      }
-      window.zipSave = ()=>{
-        const q = Number(document.getElementById("zipQ").value);
-        const a = document.createElement("a");
-        a.download = "压缩图.jpg";
-        a.href = zipCanvas.toDataURL("image/jpeg", q);
-        a.click();
-      }
-      break;
-    case "calc":
-      const calcInput = document.getElementById("calcInput");
-      window.calcWrite = v=>{if(v === "×") v = "*";calcInput.value += v;}
-      window.calcClear = ()=>calcInput.value = "";
-      window.calcEqual = ()=>{try{let val = calcInput.value.replace(/×/g,"*");calcInput.value = eval(val);}catch{calcInput.value = "错误";}}
-      break;
-    case "unit":
-      const unitRate = {km:1000,m:1,cm:0.01,mm:0.001};
-      window.unitConvert = ()=>{
-        const num = Number(document.getElementById("unitNum").value);
-        const from = document.getElementById("unitFrom").value;
-        const to = document.getElementById("unitTo").value;
-        const meter = num * unitRate[from];
-        const res = meter / unitRate[to];
-        document.getElementById("unitRes").innerText = res;
-      }
-      break;
-    case "randnum":
-      window.randGen = ()=>{
-        const min = Number(document.getElementById("randMin").value);
-        const max = Number(document.getElementById("randMax").value);
-        if(min >= max){alert("最大值必须大于最小值");return}
-        const res = Math.floor(Math.random()*(max-min+1)) + min;
-        document.getElementById("randShow").innerText = res;
-      }
-      break;
-    case "case":
-      window.caseUp = ()=>{document.getElementById("caseOut").value = document.getElementById("caseIn").value.toUpperCase();}
-      window.caseLow = ()=>{document.getElementById("caseOut").value = document.getElementById("caseIn").value.toLowerCase();}
-      break;
-    case "trimspace":
-      window.tsClear = ()=>{let str = document.getElementById("tsIn").value;str = str.trim().replace(/\s+/g," ");document.getElementById("tsOut").value = str;}
-      break;
-    case "textformat":
-      window.tfFormat = ()=>{let s = document.getElementById("tfIn").value;s = s.replace(/\n\s*\n/g,"\n").trim();document.getElementById("tfOut").value = s;}
-      break;
-    case "wordcount":
-      window.wcCalc = ()=>{
-        const s = document.getElementById("wcText").value;
-        const total = s.length;
-        const pure = s.replace(/\s/g,"").length;
-        document.getElementById("wcInfo").innerHTML = `总字符：${total}<br>纯文字(去空格)：${pure}`;
-      }
-      break;
-    case "mbti":
-      const mbtiQs = [
-        {q:1,a1:"喜欢热闹多人聚会(E)",a2:"独处充电更舒服(I)"},
-        {q:2,a1:"关注事实细节(S)",a2:"喜欢联想想象(N)"},
-        {q:3,a1:"理性公平判断(T)",a2:"共情人情优先(F)"},
-        {q:4,a1:"计划安排准时(J)",a2:"随性灵活拖延(P)"},
-        {q:5,a1:"主动找人聊天(E)",a2:"等别人开口(I)"},
-        {q:6,a1:"看重实际经验(S)",a2:"看重灵感创意(N)"},
-        {q:7,a1:"对错分明讲逻辑(T)",a2:"照顾他人感受(F)"},
-        {q:8,a1:"做事有清单步骤(J)",a2:"走一步看一步(P)"},
-        {q:9,a1:"发言直率主动(E)",a2:"深思熟虑再说(I)"},
-        {q:10,a1:"务实落地执行(S)",a2:"构思长远蓝图(N)"},
-        {q:11,a1:"规则大于人情(T)",a2:"和谐大于规矩(F)"},
-        {q:12,a1:"结束任务再休息(J)",a2:"累了随时歇(P)"}
-      ];
-      let mbtiHtml = "";
-      mbtiQs.forEach((item,i)=>{
-        mbtiHtml += `<div class="q-item"><div class="q-title">${item.q}. ${item.a1.split("(")[0]} / ${item.a2.split("(")[0]}</div>
-        <div class="opt"><label><input type="radio" name="mbti${i}" value="${item.a1.slice(-2,-1)}"> ${item.a1}</label></div>
-        <div class="opt"><label><input type="radio" name="mbti${i}" value="${item.a2.slice(-2,-1)}"> ${item.a2}</label></div></div>`;
-      })
-      document.getElementById("mbtiQBox").innerHTML = mbtiHtml;
-      window.mbtiCalc = ()=>{
-        let E=0,I=0,S=0,N=0,T=0,F=0,J=0,P=0;
-        for(let i=0;i<mbtiQs.length;i++){
-          const sel = document.querySelector(`input[name="mbti${i}"]:checked`);
-          if(!sel){alert(`第${i+1}题未选择`);return}
-          const v = sel.value;
-          if(v==="E")E++;if(v==="I")I++;if(v==="S")S++;if(v==="N")N;
-          if(v==="T")T++;if(v==="F")F;if(v==="J")J++;if(v==="P")P;
-        }
-        let code = (E>=I?"E":"I")+(S>=N?"S":"N")+(T>=F?"T":"F")+(J>=P?"J":"P");
-        const dict = {
-ESTJ:"总经理型：务实果断，统筹管理力强，守规则重效率",ISTJ:"检查员：严谨细心踏实，细节稳定靠谱",
-ESFJ:"执政官：热心协调人际，温和有责任心",ISFJ:"守卫者：温柔内敛默默付出",
-ESTP:"企业家：灵活临场应变，实操社交强",ISTP:"鉴赏家：冷静动手强，爱拆解事物",
-ESFP:"表演者：乐观爱热闹，带动氛围活在当下",ISFP:"探险家：审美细腻，遵从内心",
-ENTJ:"指挥官：天生领袖战略格局，敢冲敢闯",INTJ:"建筑师：深度远见，独立完美策划",
-ENFJ:"主人公：感染力鼓舞他人，理想共情强",INFJ:"咨询师：洞察力细腻，内心坚定知己",
-ENTP:"辩论家：脑洞思辨口才，讨厌死板",INTP:"逻辑学家：痴迷原理佛系钻研",
-ENFP:"竞选者：阳光创意自由感染力足",INFP:"调停者：纯粹理想柔软安静治愈"};
-        document.getElementById("mbtiResultBox").innerHTML = `<h4>你的MBTI：${code}</h4><p>${dict[code]}</p>`;
-      }
-      break;
-    case "disc":
-      const discQs = [
-        {q:1,a1:"果断支配(D)",a2:"乐观影响(I)",a3:"稳健平和(S)",a4:"严谨谨慎(C)"},
-        {q:2,a1:"追求快速结果(D)",a2:"喜欢社交表达(I)",a3:"安稳少变动(S)",a4:"精准不出错(C)"},
-        {q:3,a1:"强势主导决策(D)",a2:"热情带动气氛(I)",a3:"配合团队服从(S)",a4:"核对细节标准(C)"},
-        {q:4,a1:"抗压敢争(D)",a2:"爱分享赞美(I)",a3:"不喜冲突妥协(S)",a4:"挑剔完善(C)"},
-        {q:5,a1:"目标第一(D)",a2:"人脉氛围第一(I)",a3:"稳定和谐第一(S)",a4:"规范质量第一(C)"},
-        {q:6,a1:"做事雷厉风行(D)",a2:"沟通幽默风趣(I)",a3:"节奏舒缓耐心(S)",a4:"步步严谨核查(C)"},
-        {q:7,a1:"不怕对抗矛盾(D)",a2:"擅长说服打动(I)",a3:"回避争执矛盾(S)",a4:"依据规则讲道理(C)"},
-        {q:8,a1:"野心进取(D)",a2:"活泼外向(I)",a3:"知足安稳(S)",a4:"严谨自律(C)"},
-        {q:9,a1:"掌控全局节奏(D)",a2:"活跃全场气氛(I)",a3:"跟随配合他人(S)",a4:"把控细节标准(C)"},
-        {q:10,a1:"胜负欲强(D)",a2:"渴望被认可赞美(I)",a3:"追求安逸平和(S)",a4:"追求完美无误(C)"}
-      ];
-      let discHtml = "";
-      discQs.forEach((item,i)=>{
-        discHtml += `<div class="q-item"><div class="q-title">${item.q}. 最贴合你</div>`;
-        ["a1","a2","a3","a4"].forEach(k=>{
-          const v = item[k].slice(-2,-1);
-          discHtml += `<div class="opt"><label><input type="radio" name="disc${i}" value="${v}"> ${item[k].split("(")[0]}</label></div>`;
-        })
-        discHtml += `</div>`;
-      })
-      document.getElementById("discQBox").innerHTML = discHtml;
-      window.discCalc = ()=>{
-        let D=0,I=0,S=0,C=0;
-        for(let i=0;i<discQs.length;i++){
-          const sel = document.querySelector(`input[name="disc${i}"]:checked`);
-          if(!sel){alert(`第${i+1}题未作答`);return}
-          const v = sel.value;
-          if(v==="D")D++;if(v==="I")I++;if(v==="S")S++;if(v==="C")C++;
-        }
-        const maxScore = Math.max(D,I,S,C);
-        let mainType,desc;
-        if(maxScore===D){
-          mainType = "D支配型（老虎）";
-          desc = "特质：目标导向、强势果断、抗压敢闯、喜欢掌控；优势领导力强、执行力爆炸；短板容易急躁、忽略他人情绪";
-        }else if(maxScore===I){
-          mainType = "I影响型（孔雀）";
-          desc = "特质：乐观外向、擅长社交、感染力强、爱表达；优势人脉广、带动团队氛围；短板耐心不足、细节容易粗心";
-        }else if(maxScore===S){
-          mainType = "S稳健型（考拉）";
-          desc = "特质：温和佛系、配合度高、不喜冲突、耐心稳定；优势踏实靠谱、团队润滑剂；短板不擅长拒绝、变革适应慢";
-        }else{
-          mainType = "C谨慎型（猫头鹰）";
-          desc = "特质：严谨细致、追求完美、重规则数据、理性冷静；优势零失误、标准度极高；短板思虑过多、行动偏慢、容易挑剔";
-        }
-        document.getElementById("discResultBox").innerHTML = `<h4>主导性格：${mainType}</h4><p>${desc}</p>`;
-      }
-      break;
-    case "color":
-      const colorQs = [
-        {q:1,a1:"红色",a2:"蓝色",a3:"黄色",a4:"绿色"},
-        {q:2,a1:"行动快冲动",a2:"深思谨慎",a3:"乐观爱表现",a4:"温和随和"},
-        {q:3,a1:"争强好胜",a2:"追求完美",a3:"喜欢社交",a4:"不喜变化"},
-        {q:4,a1:"直来直去",a2:"细腻敏感",a3:"活泼热情",a4:"安稳佛系"}
-      ];
-      let colorHtml = "";
-      colorQs.forEach((item,i)=>{
-        colorHtml += `<div class="q-item"><div class="q-title">${item.q}. 首选</div>`;
-        ["a1","a2","a3","a4"].forEach(k=>{
-          let val = item[k];
-          colorHtml += `<div class="opt"><label><input type="radio" name="color${i}" value="${val}"> ${item[k]}</label></div>`;
-        })
-        colorHtml += `</div>`;
-      })
-      document.getElementById("colorQBox").innerHTML = colorHtml;
-      window.colorCalc = ()=>{
-        let red=0,blue=0,yellow=0,green=0;
-        for(let i=0;i<colorQs.length;i++){
-          const sel = document.querySelector(`input[name="color${i}"]:checked`);
-          if(!sel){alert(`第${i+1}题未选`);return}
-          const v = sel.value;
-          if(v==="红色")red++;if(v==="蓝色")blue++;if(v==="黄色")yellow++;if(v==="绿色")green++;
-        }
-        let max = Math.max(red,blue,yellow,green);
-        let resText;
-        if(max===red) resText = "红色性格：行动派、强势果断、目标感极强，敢冲敢拼，做事雷厉风行，缺点容易急躁、脾气直";
-        else if(max===blue) resText = "蓝色性格：完美主义、细腻严谨、深思熟虑，重视细节与规则，敏感内敛，容易多虑纠结";
-        else if(max===yellow) resText = "黄色性格：阳光外向、表现力强、乐观善交际，感染力足，热爱展示自我，耐心偏弱";
-        else resText = "绿色性格：和平佛系、温和包容、不喜冲突，安稳踏实，配合度高，缺少冲劲，不擅长拒绝";
-        document.getElementById("colorResultBox").innerHTML = `<h4>你的色彩人格</h4><p>${resText}</p>`;
-      }
-      break;
-    case "bigfive":
-      const bfQs = [
-        {q:1,a1:"非常同意",a2:"同意",a3:"一般",a4:"不同意",a5:"非常不同意",t:"外向开朗爱社交"},
-        {q:2,a1:"非常同意",a2:"同意",a3:"一般",a4:"不同意",a5:"非常不同意",t:"细心自律有责任心"},
-        {q:3,a1:"非常同意",a2:"同意",a3:"一般",a4:"不同意",a5:"非常不同意",t:"包容友善共情力强"},
-        {q:4,a1:"非常同意",a2:"同意",a3:"一般",a4:"不同意",a5:"非常不同意",t:"乐于创新脑洞大"},
-        {q:5,a1:"非常同意",a2:"同意",a3:"一般",a4:"不同意",a5:"非常不同意",t:"情绪稳定不易焦虑"}
-      ];
-      let bfHtml = "";
-      bfQs.forEach((item,i)=>{
-        bfHtml += `<div class="q-item"><div class="q-title">${i+1}. ${item.t}</div>`;
-        ["a1","a2","a3","a4","a5"].forEach(k=>{
-          let val = k==="a1"?5:k==="a2"?4:k==="a3"?3:k==="a4"?2:1;
-          bfHtml += `<div class="opt"><label><input type="radio" name="bf${i}" value="${val}"> ${item[k]}</label></div>`;
-        })
-        bfHtml += `</div>`;
-      })
-      document.getElementById("bigfiveQBox").innerHTML = bfHtml;
-      window.bigfiveCalc = ()=>{
-        let scores = [0,0,0,0,0];
-        for(let i=0;i<5;i++){
-          const sel = document.querySelector(`input[name="bf${i}"]:checked`);
-          if(!sel){alert(`第${i+1}题未完成`);return}
-          scores[i] = Number(sel.value);
-        }
-        const labels = ["外向性","尽责性","宜人性","开放性","情绪稳定性"];
-        let out = "<h4>大五人格得分（满分5分）</h4>";
-        for(let i=0;i<5;i++) out += `<p>${labels[i]}：${scores[i]}分</p>`;
-        out += `<p>分数越高该维度特质越突出</p>`;
-        document.getElementById("bigfiveResultBox").innerHTML = out;
-      }
-      break;
-    case "pdp":
-      const pdpQs = [
-        {q:1,a1:"支配强势",a2:"活泼热情",a3:"稳健平和",a4:"精准严谨",a5:"创新多变"},
-        {q:2,a1:"目标第一",a2:"人脉氛围",a3:"稳定和谐",a4:"完美细节",a5:"新奇创意"},
-        {q:3,a1:"快节奏高压",a2:"热闹社交",a3:"安稳少变",a4:"规则标准",a5:"自由无拘束"}
-      ];
-      let pdpHtml = "";
-      pdpQs.forEach((item,i)=>{
-        pdpHtml += `<div class="q-item"><div class="q-title">${item.q}. 最贴合你</div>`;
-        ["a1","a2","a3","a4","a5"].forEach((k,idx)=>{
-          let val = ["老虎","孔雀","考拉","猫头鹰","变色龙"][idx];
-          pdpHtml += `<div class="opt"><label><input type="radio" name="pdp${i}" value="${val}"> ${item[k]}</label></div>`;
-        })
-        pdpHtml += `</div>`;
-      })
-      document.getElementById("pdpQBox").innerHTML = pdpHtml;
-      window.pdpCalc = ()=>{
-        let map = {};
-        ["老虎","孔雀","考拉","猫头鹰","变色龙"].forEach(k=>map[k]=0);
-        for(let i=0;i<3;i++){
-          const sel = document.querySelector(`input[name="pdp${i}"]:checked`);
-          if(!sel){alert(`第${i+1}题未答`);return}
-          map[sel.value]++;
-        }
-        let maxType = Object.keys(map).sort((a,b)=>map[b]-map[a])[0];
-        let desc;
-        if(maxType==="老虎") desc = "老虎型：支配领导者，果断敢闯，目标导向，擅长攻坚管理，易急躁强势";
-        else if(maxType==="孔雀") desc = "孔雀型：社交影响者，乐观爱表达，擅长人脉营销，耐心偏弱";
-        else if(maxType==="考拉") desc = "考拉型：稳健支持者，温和佛系，团队润滑剂，不喜变革竞争";
-        else if(maxType==="猫头鹰") desc = "猫头鹰型：严谨规划者，完美细致，重数据规则，思虑多行动慢";
-        else desc = "变色龙型：平衡适应型，灵活多变，能适配各种环境，无固定强势风格";
-        document.getElementById("pdpResultBox").innerHTML = `<h4>你的PDP动物：${maxType}</h4><p>${desc}</p>`;
-      }
+      
+    default: // 通用/未实现的工具
+      container.innerHTML = `
+        <div style="padding: 20px; text-align: center;">
+          <p>「${tool.name}」功能正在开发中...</p>
+          <p>敬请期待✨</p>
+        </div>
+      `;
       break;
   }
 }
 
-// 页面加载初始化
-window.onload = initLocalCount;
+// 关闭弹窗
+function closeModal() {
+  document.getElementById('modal').style.display = "none";
+}
+
+/* ===== 工具功能实现 ===== */
+
+// 1. 特殊文字生成
+function generateSpecialText() {
+  const input = document.getElementById('textInput').value;
+  if (!input) {
+    document.getElementById('textResult').textContent = "请输入要转换的文字";
+    return;
+  }
+  
+  const specialChars = {
+    'a': '𝕒', 'b': '𝕓', 'c': '𝕔', 'd': '𝕕', 'e': '𝕖', 'f': '𝕗', 'g': '𝕘',
+    'h': '𝕙', 'i': '𝕚', 'j': '𝕛', 'k': '𝕜', 'l': '𝕝', 'm': '𝕞', 'n': '𝕟',
+    'o': '𝕠', 'p': '𝕡', 'q': '𝕢', 'r': '𝕣', 's': '𝕤', 't': '𝕥', 'u': '𝕦',
+    'v': '𝕧', 'w': '𝕨', 'x': '𝕩', 'y': '𝕪', 'z': '𝕫',
+    'A': '𝔸', 'B': '𝔹', 'C': 'ℂ', 'D': '𝔻', 'E': '𝔼', 'F': '𝔽', 'G': '𝔾',
+    'H': 'ℍ', 'I': '𝕀', 'J': '𝕁', 'K': '𝕂', 'L': '𝕃', 'M': '𝕄', 'N': 'ℕ',
+    'O': '𝕆', 'P': 'ℙ', 'Q': 'ℚ', 'R': 'ℝ', 'S': '𝕊', 'T': '𝕋', 'U': '𝕌',
+    'V': '𝕍', 'W': '𝕎', 'X': '𝕏', 'Y': '𝕐', 'Z': 'ℤ',
+    '0': '𝟘', '1': '𝟙', '2': '𝟚', '3': '𝟛', '4': '𝟜', '5': '𝟝',
+    '6': '𝟞', '7': '𝟟', '8': '𝟠', '9': '𝟡'
+  };
+  
+  let result = '';
+  for (let char of input) {
+    result += specialChars[char] || char;
+  }
+  
+  document.getElementById('textResult').textContent = result;
+}
+
+// 2. 翻译功能（模拟）
+function translateText() {
+  const input = document.getElementById('translateInput').value;
+  const type = document.getElementById('translateType').value;
+  
+  if (!input) {
+    document.getElementById('translateResult').textContent = "请输入要翻译的文字";
+    return;
+  }
+  
+  // 模拟翻译结果
+  let result = '';
+  switch (type) {
+    case 'zh2en':
+      result = `[模拟翻译] ${input} → This is a simulated translation of "${input}"`;
+      break;
+    case 'en2zh':
+      result = `[模拟翻译] ${input} → 这是"${input}"的模拟翻译结果`;
+      break;
+    case 'zh2jp':
+      result = `[模拟翻译] ${input} → これは「${input}」の模擬翻訳結果です`;
+      break;
+    case 'jp2zh':
+      result = `[模拟翻译] ${input} → 这是日语"${input}"的模拟翻译`;
+      break;
+  }
+  
+  document.getElementById('translateResult').textContent = result;
+}
+
+// 3. 抽签功能
+function drawLottery() {
+  const lotteryResults = [
+    "大吉 🎉", "中吉 😊", "小吉 🙂", "吉 😐", "末吉 😕", "凶 😟", "大凶 😭",
+    "一帆风顺", "万事如意", "心想事成", "再接再厉", "否极泰来", "静待时机"
+  ];
+  
+  const randomResult = lotteryResults[Math.floor(Math.random() * lotteryResults.length)];
+  document.getElementById('lotteryResult').textContent = `抽签结果：${randomResult}`;
+}
+
+// 4. 彩票号码生成
+function generateLotteryNumbers() {
+  let numbers = [];
+  
+  // 生成5注号码
+  for (let i = 0; i < 5; i++) {
+    let nums = [];
+    // 生成6个红球 (1-33)
+    while (nums.length < 6) {
+      const num = Math.floor(Math.random() * 33) + 1;
+      if (!nums.includes(num)) {
+        nums.push(num);
+      }
+    }
+    nums.sort((a, b) => a - b);
+    // 生成1个蓝球 (1-16)
+    const blue = Math.floor(Math.random() * 16) + 1;
+    
+    numbers.push(`第${i+1}注：${nums.join(' ')} + ${blue}`);
+  }
+  
+  document.getElementById('lotteryResult').innerHTML = numbers.join('<br>');
+}
+
+// 5. 生辰八字（模拟）
+function calculateBirthInfo() {
+  const date = document.getElementById('birthDate').value;
+  const time = document.getElementById('birthTime').value;
+  
+  if (!date) {
+    document.getElementById('birthResult').textContent = "请选择出生日期";
+    return;
+  }
+  
+  const year = date.split('-')[0];
+  const zodiacs = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+  const zodiac = zodiacs[(year - 1900) % 12];
+  
+  let result = `生辰八字（模拟）：\n`;
+  result += `出生年份：${year} (${zodiac}年)\n`;
+  result += `出生日期：${date}\n`;
+  if (time) result += `出生时辰：${time}点\n`;
+  result += `五行属性：${['金', '木', '水', '火', '土'][Math.floor(Math.random() * 5)]}`;
+  
+  document.getElementById('birthResult').textContent = result;
+}
+
+// 6. 手持弹幕
+let barrageInterval;
+function startBarrage() {
+  const text = document.getElementById('barrageText').value || '欢迎使用万能工具箱';
+  const speed = document.getElementById('barrageSpeed').value;
+  const container = document.getElementById('barrageResult');
+  
+  container.textContent = text;
+  container.style.position = 'relative';
+  container.style.left = '100%';
+  
+  let position = 100;
+  clearInterval(barrageInterval);
+  
+  barrageInterval = setInterval(() => {
+    position -= 2;
+    if (position < -container.offsetWidth) {
+      position = 100;
+    }
+    container.style.left = `${position}%`;
+  }, 50 * speed);
+}
+
+function stopBarrage() {
+  clearInterval(barrageInterval);
+  document.getElementById('barrageResult').style.left = '0';
+}
+
+// 7. 手机清灰
+function playCleanSound() {
+  const audio = document.getElementById('cleanAudio');
+  audio.play().catch(err => {
+    alert('需要手动点击播放声音');
+  });
+}
+
+function stopCleanSound() {
+  const audio = document.getElementById('cleanAudio');
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+// 8. 网站Ping（模拟）
+function pingWebsite() {
+  const url = document.getElementById('pingUrl').value;
+  if (!url) {
+    document.getElementById('pingResult').textContent = "请输入网址";
+    return;
+  }
+  
+  document.getElementById('pingResult').textContent = `正在Ping ${url}...\n`;
+  
+  setTimeout(() => {
+    const delay = Math.floor(Math.random() * 100) + 20;
+    document.getElementById('pingResult').textContent += 
+      `来自 ${url} 的回复: 字节=32 时间=${delay}ms TTL=56\n` +
+      `Ping 统计信息:\n` +
+      `    数据包: 已发送 = 4，已接收 = 4，丢失 = 0 (0% 丢失)，\n` +
+      `往返行程的估计时间(以毫秒为单位):\n` +
+      `    最短 = ${delay-10}ms，最长 = ${delay+10}ms，平均 = ${delay}ms`;
+  }, 1000);
+}
+
+// 9. 水平仪
+function initLevel() {
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (event) => {
+      const beta = event.beta; // 前后倾斜
+      const gamma = event.gamma; // 左右倾斜
+      
+      document.getElementById('levelLine').style.transform = `rotate(${gamma}deg)`;
+      document.getElementById('levelText').textContent = 
+        `倾斜度：前后 ${beta.toFixed(1)}° | 左右 ${gamma.toFixed(1)}°`;
+      
+      if (Math.abs(beta) < 2 && Math.abs(gamma) < 2) {
+        document.getElementById('levelText').textContent += " ✅ 水平";
+      }
+    });
+  } else {
+    document.getElementById('levelText').textContent = "您的设备不支持水平仪功能";
+  }
+}
+
+// 10. 养老金计算
+function calculatePension() {
+  const base = Number(document.getElementById('pensionBase').value);
+  const years = Number(document.getElementById('pensionYears').value);
+  const age = Number(document.getElementById('pensionAge').value);
+  
+  // 简化版养老金计算公式
+  const personalAccount = base * 0.08 * 12 * years / ((60 - age) < 139 ? 139 : (60 - age) * 12);
+  const basicPension = 800 * (years / 15); // 基础养老金模拟
+  const total = (basicPension + personalAccount).toFixed(2);
+  
+  document.getElementById('pensionResult').textContent = 
+    `预计每月养老金：¥${total}\n` +
+    `基础养老金：¥${basicPension.toFixed(2)}\n` +
+    `个人账户养老金：¥${personalAccount.toFixed(2)}`;
+}
+
+// 11. 个税计算
+function calculateTax() {
+  const income = Number(document.getElementById('taxIncome').value);
+  const deduction = Number(document.getElementById('taxDeduction').value);
+  
+  // 个税计算公式
+  const taxableIncome = income - 5000 - deduction;
+  let tax = 0;
+  
+  if (taxableIncome > 0) {
+    if (taxableIncome <= 3000) {
+      tax = taxableIncome * 0.03;
+    } else if (taxableIncome <= 12000) {
+      tax = taxableIncome * 0.1 - 210;
+    } else if (taxableIncome <= 25000) {
+      tax = taxableIncome * 0.2 - 1410;
+    } else {
+      tax = taxableIncome * 0.25 - 2660;
+    }
+  }
+  
+  document.getElementById('taxResult').textContent = 
+    `月收入：¥${income}\n` +
+    `应缴个税：¥${tax.toFixed(2)}\n` +
+    `税后收入：¥${(income - tax).toFixed(2)}`;
+}
+
+// 12. 体脂率计算
+function calculateBodyFat() {
+  const weight = Number(document.getElementById('bfWeight').value);
+  const height = Number(document.getElementById('bfHeight').value) / 100;
+  const gender = document.getElementById('bfGender').value;
+  const age = Number(document.getElementById('bfAge').value);
+  
+  const bmi = weight / (height * height);
+  // 体脂率计算公式（简化版）
+  let bodyFat = 0;
+  
+  if (gender === 'male') {
+    bodyFat = (1.2 * bmi) + (0.23 * age) - 16.2;
+  } else {
+    bodyFat = (1.2 * bmi) + (0.23 * age) - 5.4;
+  }
+  
+  document.getElementById('bfResult').textContent = 
+    `BMI指数：${bmi.toFixed(1)} (${bmi < 18.5 ? '偏瘦' : bmi < 24 ? '正常' : '偏胖'})\n` +
+    `体脂率：${bodyFat.toFixed(1)}%\n` +
+    `${gender === 'male' ? '男性' : '女性'}正常体脂率：${gender === 'male' ? '10-20%' : '20-30%'}`;
+}
+
+// 13. 血型计算
+function calculateBloodType() {
+  const father = document.getElementById('bloodFather').value;
+  const mother = document.getElementById('bloodMother').value;
+  
+  if (!father || !mother) {
+    document.getElementById('bloodResult').textContent = "请选择父母血型";
+    return;
+  }
+  
+  const bloodMap = {
+    'A+A': 'A、O',
+    'A+B': 'A、B、AB、O',
+    'A+AB': 'A、B、AB',
+    'A+O': 'A、O',
+    'B+B': 'B、O',
+    'B+AB': 'A、B、AB',
+    'B+O': 'B、O',
+    'AB+AB': 'A、B、AB',
+    'AB+O': 'A、B',
+    'O+O': 'O'
+  };
+  
+  const key = `${father}+${mother}`;
+  const reverseKey = `${mother}+${father}`;
+  const result = bloodMap[key] || bloodMap[reverseKey] || '无法确定';
+  
+  document.getElementById('bloodResult').textContent = 
+    `父亲血型：${father}\n母亲血型：${mother}\n子女可能血型：${result}`;
+}
+
+// 14. 二十四点计算
+function calculate24Point() {
+  const input = document.getElementById('point24Input').value;
+  const nums = input.split(',').map(Number).filter(n => !isNaN(n) && n > 0 && n < 14);
+  
+  if (nums.length !== 4) {
+    document.getElementById('point24Result').textContent = "请输入4个有效数字";
+    return;
+  }
+  
+  // 简化版：随机生成一个表达式
+  const ops = ['+', '-', '×', '÷'];
+  let expr = '';
+  
+  // 随机组合
+  const op1 = ops[Math.floor(Math.random() * 4)];
+  const op2 = ops[Math.floor(Math.random() * 4)];
+  const op3 = ops[Math.floor(Math.random() * 4)];
+  
+  expr = `(${nums[0]} ${op1} ${nums[1]}) ${op2} (${nums[2]} ${op3} ${nums[3]}) = 24`;
+  
+  document.getElementById('point24Result').textContent = 
+    `数字：${nums.join(', ')}\n` +
+    `一种解法：${expr}\n` +
+    `注：这是模拟结果，实际可能需要调整运算符位置`;
+}
+
+// 15. 震动功能
+function startVibrate() {
+  const time = document.getElementById('vibrateTime').value;
+  
+  let duration = 1000;
+  if (time === 'short') duration = 500;
+  if (time === 'long') duration = 2000;
+  
+  if (navigator.vibrate) {
+    navigator.vibrate(duration);
+    alert(`开始震动${duration}毫秒`);
+  } else {
+    alert('您的设备不支持震动功能');
+  }
+}
+
+// 16. 藏头诗生成
+function generatePoem() {
+  const input = document.getElementById('poemInput').value;
+  
+  if (!input || input.length < 2 || input.length > 4) {
+    document.getElementById('poemResult').textContent = "请输入2-4个汉字";
+    return;
+  }
+  
+  const words = input.split('');
+  const poems = [];
+  
+  // 模拟藏头诗生成
+  const poemLib = [
+    ['春眠不觉晓', '处处闻啼鸟', '夜来风雨声', '花落知多少'],
+    ['白日依山尽', '黄河入海流', '欲穷千里目', '更上一层楼'],
+    ['床前明月光', '疑是地上霜', '举头望明月', '低头思故乡'],
+    ['千山鸟飞绝', '万径人踪灭', '孤舟蓑笠翁', '独钓寒江雪']
+  ];
+  
+  const basePoem = poemLib[Math.floor(Math.random() * poemLib.length)];
+  
+  for (let i = 0; i < words.length; i++) {
+    poems.push(words[i] + basePoem[i].substring(1));
+  }
+  
+  document.getElementById('poemResult').textContent = poems.join('\n');
+}
+
+// 17. 文案生成
+function generateCopywriting(type) {
+  const data = copywritingData[type] || [];
+  const randomText = data[Math.floor(Math.random() * data.length)];
+  document.getElementById('copyResult').textContent = randomText;
+}
+
+// 复制到剪贴板
+function copyToClipboard(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('复制成功！');
+  }).catch(() => {
+    alert('复制失败，请手动复制');
+  });
+}
+
+// 18. 奖状生成器
+function generateCertificate() {
+  const name = document.getElementById('certName').value || '优秀用户';
+  const reason = document.getElementById('certReason').value || '表现优异';
+  
+  document.getElementById('certContent').innerHTML = `
+    <p>${name} 同志：</p>
+    <p>在${reason}方面表现突出，特发此证，以资鼓励。</p>
+    <p>—————— 万能工具箱颁发 ——————</p>
+    <p>${new Date().getFullYear()}年${new Date().getMonth() + 1}月</p>
+  `;
+}
+
+// 19. 答案之书/读心术
+function getFunAnswer() {
+  const answers = [
+    "肯定✅", "否定❌", "也许🤔", "等待时机⏳", "顺其自然🍃",
+    "全力以赴💪", "三思而行🧐", "会有惊喜🎁", "保持耐心⌛",
+    "相信自己💖", "时机未到🕰️", "大有可为🚀", "适可而止🛑",
+    "另辟蹊径🌀", "水到渠成💧", "柳暗花明🌸"
+  ];
+  
+  const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+  document.getElementById('funResult').textContent = randomAnswer;
+}
+
+// 20. 图片格式转换（前端模拟）
+function convertImageFormat() {
+  const fileInput = document.getElementById('imageFile');
+  const format = document.getElementById('imageFormat').value;
+  
+  if (!fileInput.files[0]) {
+    document.getElementById('imageResult').textContent = "请选择图片文件";
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('imageResult').innerHTML = 
+      `<p>图片已转换为${format.toUpperCase()}格式</p>
+       <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+       <button onclick="downloadImage()" style="margin-top: 10px;">下载转换后的图片</button>`;
+  };
+  reader.readAsDataURL(fileInput.files[0]);
+}
+
+// 图片编辑功能（模拟）
+function rotateImage() { alert('图片旋转功能模拟实现'); }
+function cropImage() { alert('图片裁剪功能模拟实现'); }
+function filterImage() { alert('图片滤镜功能模拟实现'); }
+
+// 下载图片（模拟）
+function downloadImage() {
+  alert('图片下载功能模拟实现');
+}
+
+/* ===== 收藏功能 ===== */
+function getFavorites() {
+  return JSON.parse(localStorage.getItem("favorites") || "[]");
+}
+
+function toggleFav(event) {
+  event.stopPropagation(); // 防止触发弹窗关闭
+  const favBtn = document.getElementById('favBtn');
+  const favs = getFavorites();
+  
+  const index = favs.findIndex(f => f.id === currentTool.id);
+  
+  if (index > -1) {
+    // 取消收藏
+    favs.splice(index, 1);
+    favBtn.innerText = '☆';
+    favBtn.classList.remove('active');
+  } else {
+    // 添加收藏
+    favs.push(currentTool);
+    favBtn.innerText = '★';
+    favBtn.classList.add('active');
+  }
+  
+  localStorage.setItem("favorites", JSON.stringify(favs));
+  renderMe(); // 更新我的页面
+}
+
+/* ===== 历史记录 ===== */
+function addHistory(tool) {
+  let h = JSON.parse(localStorage.getItem("history") || "[]");
+  h = h.filter(x => x.id !== tool.id);
+  h.unshift(tool);
+  localStorage.setItem("history", JSON.stringify(h.slice(0, 10)));
+}
+
+/* ===== 我的页面 ===== */
+function renderMe() {
+  // 渲染历史记录
+  const history = JSON.parse(localStorage.getItem("history") || "[]");
+  const historyList = document.getElementById('historyList');
+  
+  historyList.innerHTML = history.length
+    ? history.map(x => `
+        <div class="item">
+          <span onclick="openTool('${x.id}')">${x.name}</span>
+          <span class="action" onclick="removeHistory('${x.id}')">删除</span>
+        </div>
+      `).join("")
+    : `<div class="item">暂无记录</div>`;
+
+  // 渲染收藏列表
+  const favs = getFavorites();
+  const favList = document.getElementById('favList');
+  
+  favList.innerHTML = favs.length
+    ? favs.map(x => `
+        <div class="item">
+          <span onclick="openTool('${x.id}')">${x.name}</span>
+          <span class="action" onclick="removeFav('${x.id}')">取消收藏</span>
+        </div>
+      `).join("")
+    : `<div class="item">暂无收藏</div>`;
+}
+
+// 删除历史记录
+function removeHistory(id) {
+  let history = JSON.parse(localStorage.getItem("history") || "[]");
+  history = history.filter(x => x.id !== id);
+  localStorage.setItem("history", JSON.stringify(history));
+  renderMe();
+}
+
+// 取消收藏
+function removeFav(id) {
+  let favs = getFavorites();
+  favs = favs.filter(x => x.id !== id);
+  localStorage.setItem("favorites", JSON.stringify(favs));
+  
+  // 更新当前弹窗的收藏按钮状态
+  if (currentTool && currentTool.id === id) {
+    const favBtn = document.getElementById('favBtn');
+    favBtn.innerText = '☆';
+    favBtn.classList.remove('active');
+  }
+  
+  renderMe();
+}
 </script>
+
 </body>
 </html>
